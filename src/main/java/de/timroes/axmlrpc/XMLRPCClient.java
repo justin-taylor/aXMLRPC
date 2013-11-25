@@ -680,7 +680,7 @@ public class XMLRPCClient {
 						istream = http.getErrorStream();
 					} else {
 						throw new XMLRPCException("Invalid status code '"
-								+ statusCode + "' returned from server.");
+								+ statusCode + "' returned from server.", statusCode);
 					}
 
 				} else {
@@ -716,20 +716,20 @@ public class XMLRPCClient {
 					} else {
 						// ... or throw an exception
 						throw new XMLRPCException("The server responded with a http 301 or 302 status "
-								+ "code, but forwarding has not been enabled (FLAGS_FORWARD).");
+								+ "code, but forwarding has not been enabled (FLAGS_FORWARD).", statusCode);
 
 					}
 				}
 
 				if(!isFlagSet(FLAGS_IGNORE_STATUSCODE)
 					&& statusCode != HttpURLConnection.HTTP_OK) {
-					throw new XMLRPCException("The status code of the http response must be 200.");
+					throw new XMLRPCException("The status code of the http response must be 200.", statusCode);
 				}
 
 				// Check for strict parameters
 				if(isFlagSet(FLAGS_STRICT)) {
 					if(!http.getContentType().startsWith(TYPE_XML)) {
-						throw new XMLRPCException("The Content-Type of the response must be text/xml.");
+						throw new XMLRPCException("The Content-Type of the response must be text/xml.", statusCode);
 					}
 				}
 

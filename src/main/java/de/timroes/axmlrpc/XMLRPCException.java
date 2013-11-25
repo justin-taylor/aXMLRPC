@@ -7,6 +7,8 @@ package de.timroes.axmlrpc;
  */
 public class XMLRPCException extends Exception {
 
+    private int statusCode = -1;
+
 	public XMLRPCException() {
 		super();
 	}
@@ -15,12 +17,32 @@ public class XMLRPCException extends Exception {
 		super(ex);
 	}
 
+	public XMLRPCException(Exception ex, int statusCode) {
+		super(ex);
+        this.statusCode = statusCode;
+	}
+
 	public XMLRPCException(String ex) {
 		super(ex);
+	}
+
+	public XMLRPCException(String ex, int statusCode) {
+		super(ex);
+        this.statusCode = statusCode;
 	}
 
 	public XMLRPCException(String msg, Exception ex) {
 		super(msg, ex);
 	}
+
+	public XMLRPCException(String msg, Exception ex, int statusCode) {
+		super(msg, ex);
+        this.statusCode = statusCode;
+	}
+
+    public int statusCode()
+    {
+        return statusCode;
+    }
 
 }
