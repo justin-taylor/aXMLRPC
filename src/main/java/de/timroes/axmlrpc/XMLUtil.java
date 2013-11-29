@@ -121,4 +121,27 @@ public class XMLUtil {
 		return xml;
 	}
 
+
+
+    /**
+     * Recursivly prints an element's values
+     */
+    private void printElement(Element e) {
+		Node n;
+        NodeList list = e.getChildNodes();
+        for(int i = 0; i < list.getLength(); i++) {
+            n = list.item(i);
+            printNode(n,"");
+        }
+    }
+
+    private void printNode(Node rootNode, String spacer) {
+        System.out.println(spacer + rootNode.getNodeName() + " -> " + rootNode.getNodeValue());
+        NodeList nl = rootNode.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++)
+            printNode(nl.item(i), spacer + "   ");
+    }
+
+
+
 }
