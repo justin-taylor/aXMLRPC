@@ -10,6 +10,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.net.ssl.*;
 
@@ -175,6 +176,7 @@ public class XMLRPCClient {
 	private Map<String,String> httpParameters = new ConcurrentHashMap<String, String>();
 
 	private Map<Long,Caller> backgroundCalls = new ConcurrentHashMap<Long, Caller>();
+    private Random idGenerator = new Random();
 
 	private ResponseParser responseParser;
 	private CookieManager cookieManager;
@@ -455,6 +457,26 @@ public class XMLRPCClient {
 		return new Caller().call(method, params);
 	}
 
+
+    /**
+     * Creates a new request id for the callAsync method. The returned value is
+     * guaranteed to not already be in use by a previous request.
+     *
+     * @return a safe request identifier that is not already in use.
+     */
+    private long newRequestId()
+    {
+        long id = idGenerator.nextLong();
+        Caller caller = backgroundCalls.get(id);
+        while(caller != null)
+        {
+            id = idGenerator.nextLong();
+            caller = backgroundCalls.get(id);
+        }
+
+        return id;
+    }
+
 	/**
 	 * Asynchronously call a remote procedure on the server. The method must be
 	 * described by a method  name. If the method requires parameters, this must
@@ -471,7 +493,7 @@ public class XMLRPCClient {
 	 * @return The id of the current request.
 	 */
 	public long callAsync(XMLRPCCallback listener, String methodName, Object... params) {
-		long id = System.currentTimeMillis();
+		long id = newRequestId();
 		new Caller(listener, id, methodName, params).start();
 		return id;
 	}
