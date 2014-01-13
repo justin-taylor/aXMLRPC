@@ -464,7 +464,7 @@ public class XMLRPCClient {
      *
      * @return a safe request identifier that is not already in use.
      */
-    private long newRequestId()
+    private synchronized long newRequestId()
     {
         long id = idGenerator.nextLong();
         Caller caller = backgroundCalls.get(id);
