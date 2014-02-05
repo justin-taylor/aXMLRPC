@@ -770,7 +770,9 @@ public class XMLRPCClient {
 				} else {
 					throw new CancelException();
 				}
-			}
+			} catch (Exception e) {
+                throw new XMLRPCException(ex);
+            }
 
 		}
 
