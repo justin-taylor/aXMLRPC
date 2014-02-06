@@ -608,7 +608,9 @@ public class XMLRPCClient {
 				listener.onServerError(threadId, ex);
 			} catch (XMLRPCException ex) {
 				listener.onError(threadId, ex);
-			} finally {
+			} catch (Exception ex) {
+				listener.onError(threadId, new XMLRPCException(ex));
+            } finally {
 				backgroundCalls.remove(threadId);
 			}
 
@@ -770,10 +772,7 @@ public class XMLRPCClient {
 				} else {
 					throw new CancelException();
 				}
-			} catch (Exception ex) {
-                throw new XMLRPCException(ex);
-            }
-
+			}
 		}
 
 		/**
