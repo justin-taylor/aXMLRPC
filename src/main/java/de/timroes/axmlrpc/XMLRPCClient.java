@@ -8,11 +8,14 @@ import java.net.*;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.net.ssl.*;
+
+import android.util.Log;
 
 /**
  * An XMLRPCClient is a client used to make XML-RPC (Extensible Markup Language
@@ -711,24 +714,37 @@ public class XMLRPCClient {
 					istream = http.getInputStream();
 				}
 
+                /*
+                Map<String, List<String>> headers = http.getHeaderFields();
+                for(String header : headers.keySet()) {
+                    Log.e("Sighthound", "Header: "+header+" "+http.getHeaderField(header));
+                }
+                */
+
 				// If status code is 301 Moved Permanently or 302 Found ...
 				if(statusCode == HttpURLConnection.HTTP_MOVED_PERM
 						|| statusCode == HttpURLConnection.HTTP_MOVED_TEMP) {
+ 
 					// ... do either a foward
 					if(isFlagSet(FLAGS_FORWARD)) {
 						boolean temporaryForward = (statusCode == HttpURLConnection.HTTP_MOVED_TEMP);
 
 						// Get new location from header field.
-						String newLocation = http.getHeaderField("Location");
-						// Try getting header in lower case, if no header has been found
-						if(newLocation == null || newLocation.length() <= 0)
-							newLocation = http.getHeaderField("location");
+                        String newLocation = http.getHeaderField("Location");
+                        // Try getting header in lower case, if no header has been found
+                        if(newLocation == null || newLocation.length() <= 0)
+                            newLocation = http.getHeaderField("location");
 
-						// Set new location, disconnect current connection and request to new location.
+                        //Set new location, disconnect current connection and request to new location.
+                        
 						URL oldURL = url;
 						url = new URL(newLocation);
+
+                        // force old port, do not use changed port
+						url = new URL(url.getProtocol(), url.getHost(), oldURL.getPort(), url.getPath());
 						http.disconnect();
 						Object forwardedResult = call(methodName, params);
+
 
 						// In case of temporary forward, restore original URL again for next call.
 						if(temporaryForward) {
